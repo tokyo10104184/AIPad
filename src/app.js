@@ -131,49 +131,53 @@ function determineInitialLanguage() {
     return 'ja'; // Default
 }
 
-// --- Dummy AI Service ---  // Will be renamed to getAIResponse
+// --- AI Service Call ---
 async function getAIResponse(question, currentMemos) {
-    const intro = getLocalizedString('aiRealIntro', "AI Response:"); // New key for more "real" intro
-    const apiKeyMissingError = getLocalizedString('apiKeyMissingError', "Error: AI API Key is not configured. Please contact the administrator."); // New key
+    const intro = getLocalizedString('aiRealIntro', "AI Response:"); // Keep this for prefixing the final display
 
-    if (CHUTES_API_KEY === "__CHUTES_API_KEY_PLACEHOLDER__" || !CHUTES_API_KEY) {
-        console.error("CHUTES_API_KEY is not set.");
-        return `${intro} ${apiKeyMissingError}`;
-    }
-
-    // Simulate an API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000)); // 1 second delay
-
-    // Existing dummy logic can be adapted here to form the "API's" response content
-    // For now, we'll keep it similar to the dummy logic but frame it as an API response.
-    const questionLower = question.toLowerCase().trim();
-
-    if (!questionLower) {
+    if (!question.trim()) {
+        // Handle empty question on the client-side before calling the API (optional, but good practice)
         return `${intro} ${getLocalizedString('aiDummyEmptyQuestion', "You didn't ask anything!")}`;
     }
 
-    const keywords = questionLower.split(' ').filter(word => word.length > 3);
+    try {
+        const response = await fetch('/api/ask-openai', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                question: question,
+                memos: currentMemos // Send all current memos
+            }),
+        });
 
-    if (keywords.length === 0 && questionLower.length > 0) {
-        return `${intro} ${getLocalizedString('aiDummyShortQuestion', "Your question is a bit short. Try asking something more specific about your memos.")} (Queried with key: ${CHUTES_API_KEY.substring(0,4)}...)`;
-    }
+        const data = await response.json();
 
-    for (const memo of currentMemos) {
-        const memoTitleLower = memo.title.toLowerCase();
-        const memoContentLower = memo.content.toLowerCase();
-
-        for (const keyword of keywords) {
-            if (memoTitleLower.includes(keyword) || memoContentLower.includes(keyword)) {
-                const snippet = memo.content.substring(0, 100) + (memo.content.length > 100 ? '...' : '');
-                const responseTemplate = getLocalizedString('aiDummyFoundResponse', "Based on your memo titled '{0}', I can share this snippet: '{1}'."); // Removed "dummy AI" part for this version
-                // Simulate that the key was used for the query
-                return `${intro} ${responseTemplate.replace('{0}', memo.title || getLocalizedString('untitledMemoFallback', 'Untitled')).replace('{1}', snippet)} (Queried with key: ${CHUTES_API_KEY.substring(0,4)}...)`;
-            }
+        if (!response.ok) {
+            // Error came from our serverless function (or network issue)
+            console.error('Error from AI service/serverless function:', data.error || response.statusText);
+            const serverErrorMsg = getLocalizedString('aiServiceError', 'Sorry, there was an error contacting the AI service.');
+            // Use error from serverless function if available, otherwise generic
+            return `${intro} ${data.error ? data.error : serverErrorMsg}`;
         }
-    }
 
-    const notFoundTemplate = getLocalizedString('aiDummyNotFoundResponse', "I've scanned your memos but couldn't find specific information related to your question: '{0}'."); // Removed "dummy AI" part
-    return `${intro} ${notFoundTemplate.replace('{0}', question)} (Queried with key: ${CHUTES_API_KEY.substring(0,4)}...)`;
+        // Assuming successful response from serverless function has { answer: "..." }
+        if (data.answer) {
+            return `${intro} ${data.answer}`;
+        } else {
+            // Unexpected response structure from our serverless function
+            console.error('Unexpected response structure from serverless function:', data);
+            const unexpectedRespMsg = getLocalizedString('aiUnexpectedResponse', 'The AI service returned an unexpected response.');
+            return `${intro} ${unexpectedRespMsg}`;
+        }
+
+    } catch (error) {
+        // Catch-all for network errors or other issues with the fetch call itself
+        console.error('Network or other error calling /api/ask-openai:', error);
+        const networkErrorMsg = getLocalizedString('aiNetworkError', 'There was a network problem trying to reach the AI service.');
+        return `${intro} ${networkErrorMsg}`;
+    }
 }
 
 // --- Core Memo Logic ---

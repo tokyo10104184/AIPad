@@ -24,6 +24,8 @@
   "aiDummyFoundResponse": "Based on your memo titled '{0}', I can share this snippet: '{1}'.",
   "aiDummyNotFoundResponse": "I've scanned your memos but couldn't find specific information related to your question: '{0}'. Please try rephrasing.",
   "aiRealIntro": "AI Response:",
-  "apiKeyMissingError": "Error: AI API Key is not configured. Please contact the administrator.",
-  "aiThinking": "AI is thinking..."
+  "aiThinking": "AI is thinking...",
+  "aiServiceError": "Sorry, there was an error contacting the AI service.",
+  "aiUnexpectedResponse": "The AI service returned an unexpected response.",
+  "aiNetworkError": "There was a network problem trying to reach the AI service."
 }
