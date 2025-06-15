@@ -21,6 +21,9 @@
   "aiDummyIntro": "これはダミーAIの応答です。",
   "aiDummyEmptyQuestion": "何も質問していません！",
   "aiDummyShortQuestion": "ご質問が少し短いです。メモについてもっと具体的に質問してみてください。",
-  "aiDummyFoundResponse": "メモ「{0}」に基づいて、次の情報が見つかりました：「{1}」。現在はダミーAIであることに注意してください！",
-  "aiDummyNotFoundResponse": "メモをスキャンしましたが、ご質問「{0}」に関連する具体的な情報は見つかりませんでした。言い換えをお試しください。私はダミーAIです。"
+  "aiDummyFoundResponse": "メモ「{0}」に基づいて、次の情報が見つかりました：「{1}」。",
+  "aiDummyNotFoundResponse": "メモをスキャンしましたが、ご質問「{0}」に関連する具体的な情報は見つかりませんでした。言い換えをお試しください。",
+  "aiRealIntro": "AIの応答:",
+  "apiKeyMissingError": "エラー: AI APIキーが設定されていません。管理者にお問い合わせください。",
+  "aiThinking": "AIが思考中です..."
 }

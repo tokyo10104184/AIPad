@@ -37,6 +37,10 @@ let aiResponsePlaceholderP; // Reference to the placeholder <p>
 const LOCAL_STORAGE_KEY = 'js-memo-app-memos';
 const LANG_STORAGE_KEY = 'js-memo-app-lang';
 
+// Placeholder for the API Key. In a real build process (e.g., with Vercel, Netlify, Webpack),
+// this would be replaced by the actual environment variable CHUTES_API_KEY.
+const CHUTES_API_KEY = "__CHUTES_API_KEY_PLACEHOLDER__"; // Or an empty string: "";
+
 
 // --- I18N Functions ---
 async function loadTranslations(lang) {
@@ -127,27 +131,31 @@ function determineInitialLanguage() {
     return 'ja'; // Default
 }
 
-// --- Dummy AI Service ---
-/**
- * Simulates an AI response based on memos and a question.
- * @param {string} question The user's question.
- * @param {Memo[]} currentMemos An array of current memo objects.
- * @returns {string} A simulated AI response.
- */
-function getAIDummyResponse(question, currentMemos) {
-    const genericIntro = getLocalizedString('aiDummyIntro', "This is a DUMMY AI response."); // New localization key
+// --- Dummy AI Service ---  // Will be renamed to getAIResponse
+async function getAIResponse(question, currentMemos) {
+    const intro = getLocalizedString('aiRealIntro', "AI Response:"); // New key for more "real" intro
+    const apiKeyMissingError = getLocalizedString('apiKeyMissingError', "Error: AI API Key is not configured. Please contact the administrator."); // New key
+
+    if (CHUTES_API_KEY === "__CHUTES_API_KEY_PLACEHOLDER__" || !CHUTES_API_KEY) {
+        console.error("CHUTES_API_KEY is not set.");
+        return `${intro} ${apiKeyMissingError}`;
+    }
+
+    // Simulate an API call delay
+    await new Promise(resolve => setTimeout(resolve, 1000)); // 1 second delay
+
+    // Existing dummy logic can be adapted here to form the "API's" response content
+    // For now, we'll keep it similar to the dummy logic but frame it as an API response.
     const questionLower = question.toLowerCase().trim();
 
     if (!questionLower) {
-        return `${genericIntro} ${getLocalizedString('aiDummyEmptyQuestion', "You didn't ask anything!")}`; // New localization key
+        return `${intro} ${getLocalizedString('aiDummyEmptyQuestion', "You didn't ask anything!")}`;
     }
 
-    // Simple keyword extraction (words longer than 3 chars)
     const keywords = questionLower.split(' ').filter(word => word.length > 3);
 
     if (keywords.length === 0 && questionLower.length > 0) {
-         // If question is short and has no real keywords (e.g. "hi", "test")
-        return `${genericIntro} ${getLocalizedString('aiDummyShortQuestion', "Your question is a bit short. Try asking something more specific about your memos.")} Your question was: "${question}"`; // New localization key
+        return `${intro} ${getLocalizedString('aiDummyShortQuestion', "Your question is a bit short. Try asking something more specific about your memos.")} (Queried with key: ${CHUTES_API_KEY.substring(0,4)}...)`;
     }
 
     for (const memo of currentMemos) {
@@ -157,18 +165,15 @@ function getAIDummyResponse(question, currentMemos) {
         for (const keyword of keywords) {
             if (memoTitleLower.includes(keyword) || memoContentLower.includes(keyword)) {
                 const snippet = memo.content.substring(0, 100) + (memo.content.length > 100 ? '...' : '');
-                // Using string templates for easier construction here, will need localization keys for the template parts.
-                // For now, let's make the response template simpler and add more keys.
-                // "Based on your memo titled '{0}', I can share this snippet: '{1}'."
-                const responseTemplate = getLocalizedString('aiDummyFoundResponse', "Based on your memo titled '{0}', I can share this snippet: '{1}'. Remember, I'm just a dummy AI for now!");
-                return `${genericIntro} ${responseTemplate.replace('{0}', memo.title || getLocalizedString('untitledMemoFallback', 'Untitled')).replace('{1}', snippet)}`;
+                const responseTemplate = getLocalizedString('aiDummyFoundResponse', "Based on your memo titled '{0}', I can share this snippet: '{1}'."); // Removed "dummy AI" part for this version
+                // Simulate that the key was used for the query
+                return `${intro} ${responseTemplate.replace('{0}', memo.title || getLocalizedString('untitledMemoFallback', 'Untitled')).replace('{1}', snippet)} (Queried with key: ${CHUTES_API_KEY.substring(0,4)}...)`;
             }
         }
     }
 
-    // If no keywords matched or no memos searched
-    const notFoundTemplate = getLocalizedString('aiDummyNotFoundResponse', "I've scanned your memos but couldn't find specific information related to your question: '{0}'. Please try rephrasing. Remember, I'm a dummy AI.");
-    return `${genericIntro} ${notFoundTemplate.replace('{0}', question)}`;
+    const notFoundTemplate = getLocalizedString('aiDummyNotFoundResponse', "I've scanned your memos but couldn't find specific information related to your question: '{0}'."); // Removed "dummy AI" part
+    return `${intro} ${notFoundTemplate.replace('{0}', question)} (Queried with key: ${CHUTES_API_KEY.substring(0,4)}...)`;
 }
 
 // --- Core Memo Logic ---
@@ -337,13 +342,22 @@ async function handleAskAI() { // Make it async if AI service might become async
     if (!aiQuestionInput || !aiResponseArea) return;
 
     const question = aiQuestionInput.value.trim();
-    // getAIDummyResponse will handle empty question, providing a translated message.
 
-    // Display the response
-    aiResponseArea.innerHTML = ''; // Clear previous content, including the placeholder
+    // Clear previous response and show loading message
+    const thinkingMessage = getLocalizedString('aiThinking', "AI is thinking..."); // New localization key
+    aiResponseArea.innerHTML = ''; // Clear previous content
+    const thinkingParagraph = document.createElement('p');
+    thinkingParagraph.style.fontStyle = 'italic'; // Optional: style the thinking message
+    thinkingParagraph.textContent = thinkingMessage;
+    aiResponseArea.appendChild(thinkingParagraph);
+
+    // Get the AI response (already updated to await)
+    const aiResponseText = await getAIResponse(question, memos); // memos is the global array
+
+    // Display the actual response
+    aiResponseArea.innerHTML = ''; // Clear "thinking..." message
     const responseParagraph = document.createElement('p');
-    // The dummy response already includes "This is a dummy AI..." or similar from its own localization.
-    responseParagraph.textContent = getAIDummyResponse(question, memos); // memos is the global array
+    responseParagraph.textContent = aiResponseText;
     aiResponseArea.appendChild(responseParagraph);
 
     // Optional: Clear the question input
