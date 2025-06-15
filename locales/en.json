@@ -1,0 +1,17 @@
+{
+  "appTitle": "Memo Pad",
+  "memoTitlePlaceholder": "Memo Title",
+  "memoContentPlaceholder": "Memo Content",
+  "createMemoButton": "Create Memo",
+  "saveMemoButton": "Save Memo",
+  "deleteMemoButton": "Delete Memo",
+  "newMemoButton": "New Memo",
+  "noMemos": "No memos yet. Create one!",
+  "errorEmptyMemo": "Memo title and content cannot both be empty.",
+  "alertMemoSaved": "Memo saved successfully!",
+  "alertErrorSaving": "Error saving memo. It might have been deleted.",
+  "confirmDeleteMemo": "Are you sure you want to delete this memo?",
+  "alertMemoDeleted": "Memo deleted successfully.",
+  "alertErrorDeleting": "Error deleting memo.",
+  "untitledMemoFallback": "Untitled"
+}

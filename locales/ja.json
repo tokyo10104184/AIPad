@@ -1,0 +1,17 @@
+{
+  "appTitle": "メモ帳",
+  "memoTitlePlaceholder": "メモのタイトル",
+  "memoContentPlaceholder": "メモの内容",
+  "createMemoButton": "メモを作成",
+  "saveMemoButton": "メモを保存",
+  "deleteMemoButton": "メモを削除",
+  "newMemoButton": "新しいメモ",
+  "noMemos": "まだメモはありません。作成しましょう！",
+  "errorEmptyMemo": "メモのタイトルと内容を両方空にすることはできません。",
+  "alertMemoSaved": "メモが正常に保存されました！",
+  "alertErrorSaving": "メモの保存中にエラーが発生しました。削除された可能性があります。",
+  "confirmDeleteMemo": "このメモを本当に削除しますか？",
+  "alertMemoDeleted": "メモが正常に削除されました。",
+  "alertErrorDeleting": "メモの削除中にエラーが発生しました。",
+  "untitledMemoFallback": "無題"
+}
