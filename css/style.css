@@ -1,0 +1,118 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f4f4;
+    color: #333;
+    line-height: 1.6;
+}
+
+#app-container {
+    max-width: 700px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+#input-area {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#input-area input[type="text"],
+#input-area textarea {
+    width: 100%; /* Full width within the flex container */
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+#input-area textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+#button-area {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+#button-area button {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 10px;
+    font-size: 1em;
+}
+
+#button-area button:hover {
+    background-color: #0056b3;
+}
+
+#button-area #delete-btn {
+    background-color: #dc3545;
+}
+#button-area #delete-btn:hover {
+    background-color: #c82333;
+}
+
+#memos-list {
+    margin-top: 20px;
+}
+
+#memos-list ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+#memos-list li {
+    padding: 15px;
+    border: 1px solid #eee;
+    background-color: #f9f9f9;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#memos-list li:hover {
+    background-color: #efefef;
+}
+
+#memos-list li.selected {
+    background-color: #e0e0e0;
+    border-left: 5px solid #007bff;
+}
+
+#memos-list p { /* For "No memos yet" message */
+    text-align: center;
+    color: #777;
+}
+
+.memo-date {
+    font-size: 0.8em;
+    color: #666;
+    display: block; /* Make it appear on its own line or control spacing */
+    margin-top: 4px;
+}
+
+.memo-snippet {
+    font-size: 0.9em;
+    color: #444;
+    display: block; /* Make it appear on its own line */
+    margin-top: 4px;
+}

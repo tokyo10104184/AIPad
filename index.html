@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memo Pad</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="app-container">
+        <h1>Memo Pad</h1>
+        <div id="input-area">
+            <input type="text" id="memo-title" placeholder="Memo Title">
+            <textarea id="memo-content" placeholder="Memo Content"></textarea>
+        </div>
+        <div id="button-area">
+            <button id="create-btn">Create Memo</button>
+            <button id="save-btn" style="display:none;">Save Memo</button>
+            <button id="delete-btn" style="display:none;">Delete Memo</button>
+        </div>
+        <div id="memos-list">
+            <!-- Memos will be displayed here -->
+        </div>
+    </div>
+    <script src="src/app.js"></script>
+</body>
+</html>
