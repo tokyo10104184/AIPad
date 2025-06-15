@@ -13,5 +13,14 @@
   "confirmDeleteMemo": "このメモを本当に削除しますか？",
   "alertMemoDeleted": "メモが正常に削除されました。",
   "alertErrorDeleting": "メモの削除中にエラーが発生しました。",
-  "untitledMemoFallback": "無題"
+  "untitledMemoFallback": "無題",
+  "aiChatTitle": "AIアシスタント",
+  "aiQuestionPlaceholder": "メモについてAIに質問する...",
+  "aiAskButton": "AIに質問",
+  "aiResponsePlaceholder": "AIの応答はここに表示されます。",
+  "aiDummyIntro": "これはダミーAIの応答です。",
+  "aiDummyEmptyQuestion": "何も質問していません！",
+  "aiDummyShortQuestion": "ご質問が少し短いです。メモについてもっと具体的に質問してみてください。",
+  "aiDummyFoundResponse": "メモ「{0}」に基づいて、次の情報が見つかりました：「{1}」。現在はダミーAIであることに注意してください！",
+  "aiDummyNotFoundResponse": "メモをスキャンしましたが、ご質問「{0}」に関連する具体的な情報は見つかりませんでした。言い換えをお試しください。私はダミーAIです。"
 }

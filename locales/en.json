@@ -13,5 +13,14 @@
   "confirmDeleteMemo": "Are you sure you want to delete this memo?",
   "alertMemoDeleted": "Memo deleted successfully.",
   "alertErrorDeleting": "Error deleting memo.",
-  "untitledMemoFallback": "Untitled"
+  "untitledMemoFallback": "Untitled",
+  "aiChatTitle": "AI Assistant",
+  "aiQuestionPlaceholder": "Ask the AI about your memos...",
+  "aiAskButton": "Ask AI",
+  "aiResponsePlaceholder": "AI response will appear here.",
+  "aiDummyIntro": "This is a DUMMY AI response.",
+  "aiDummyEmptyQuestion": "You didn't ask anything!",
+  "aiDummyShortQuestion": "Your question is a bit short. Try asking something more specific about your memos.",
+  "aiDummyFoundResponse": "Based on your memo titled '{0}', I can share this snippet: '{1}'. Remember, I'm just a dummy AI for now!",
+  "aiDummyNotFoundResponse": "I've scanned your memos but couldn't find specific information related to your question: '{0}'. Please try rephrasing. Remember, I'm a dummy AI."
 }

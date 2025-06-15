@@ -27,6 +27,13 @@ let deleteBtn;
 let memosListDiv;
 let appTitleH1; // For app title translation
 
+// AI Chat Elements
+let aiChatTitleH2;
+let aiQuestionInput;
+let aiAskBtn;
+let aiResponseArea;
+let aiResponsePlaceholderP; // Reference to the placeholder <p>
+
 const LOCAL_STORAGE_KEY = 'js-memo-app-memos';
 const LANG_STORAGE_KEY = 'js-memo-app-lang';
 
@@ -93,6 +100,17 @@ function applyTranslationsToStaticElements() {
     }
     if (saveBtn) saveBtn.textContent = getLocalizedString('saveMemoButton');
     if (deleteBtn) deleteBtn.textContent = getLocalizedString('deleteMemoButton');
+
+    // Add translations for AI section
+    if (aiChatTitleH2) aiChatTitleH2.textContent = getLocalizedString('aiChatTitle');
+    if (aiQuestionInput) aiQuestionInput.placeholder = getLocalizedString('aiQuestionPlaceholder');
+    if (aiAskBtn) aiAskBtn.textContent = getLocalizedString('aiAskButton');
+
+    // Only set the placeholder text if no actual AI response has been rendered yet.
+    // We can check if aiResponseArea only contains the placeholder paragraph.
+    if (aiResponsePlaceholderP && aiResponseArea.contains(aiResponsePlaceholderP) && aiResponseArea.children.length === 1) {
+         aiResponsePlaceholderP.textContent = getLocalizedString('aiResponsePlaceholder');
+    }
 }
 
 function determineInitialLanguage() {
@@ -107,6 +125,50 @@ function determineInitialLanguage() {
     }
 
     return 'ja'; // Default
+}
+
+// --- Dummy AI Service ---
+/**
+ * Simulates an AI response based on memos and a question.
+ * @param {string} question The user's question.
+ * @param {Memo[]} currentMemos An array of current memo objects.
+ * @returns {string} A simulated AI response.
+ */
+function getAIDummyResponse(question, currentMemos) {
+    const genericIntro = getLocalizedString('aiDummyIntro', "This is a DUMMY AI response."); // New localization key
+    const questionLower = question.toLowerCase().trim();
+
+    if (!questionLower) {
+        return `${genericIntro} ${getLocalizedString('aiDummyEmptyQuestion', "You didn't ask anything!")}`; // New localization key
+    }
+
+    // Simple keyword extraction (words longer than 3 chars)
+    const keywords = questionLower.split(' ').filter(word => word.length > 3);
+
+    if (keywords.length === 0 && questionLower.length > 0) {
+         // If question is short and has no real keywords (e.g. "hi", "test")
+        return `${genericIntro} ${getLocalizedString('aiDummyShortQuestion', "Your question is a bit short. Try asking something more specific about your memos.")} Your question was: "${question}"`; // New localization key
+    }
+
+    for (const memo of currentMemos) {
+        const memoTitleLower = memo.title.toLowerCase();
+        const memoContentLower = memo.content.toLowerCase();
+
+        for (const keyword of keywords) {
+            if (memoTitleLower.includes(keyword) || memoContentLower.includes(keyword)) {
+                const snippet = memo.content.substring(0, 100) + (memo.content.length > 100 ? '...' : '');
+                // Using string templates for easier construction here, will need localization keys for the template parts.
+                // For now, let's make the response template simpler and add more keys.
+                // "Based on your memo titled '{0}', I can share this snippet: '{1}'."
+                const responseTemplate = getLocalizedString('aiDummyFoundResponse', "Based on your memo titled '{0}', I can share this snippet: '{1}'. Remember, I'm just a dummy AI for now!");
+                return `${genericIntro} ${responseTemplate.replace('{0}', memo.title || getLocalizedString('untitledMemoFallback', 'Untitled')).replace('{1}', snippet)}`;
+            }
+        }
+    }
+
+    // If no keywords matched or no memos searched
+    const notFoundTemplate = getLocalizedString('aiDummyNotFoundResponse', "I've scanned your memos but couldn't find specific information related to your question: '{0}'. Please try rephrasing. Remember, I'm a dummy AI.");
+    return `${genericIntro} ${notFoundTemplate.replace('{0}', question)}`;
 }
 
 // --- Core Memo Logic ---
@@ -271,6 +333,23 @@ function handleDeleteMemo() {
     }
 }
 
+async function handleAskAI() { // Make it async if AI service might become async
+    if (!aiQuestionInput || !aiResponseArea) return;
+
+    const question = aiQuestionInput.value.trim();
+    // getAIDummyResponse will handle empty question, providing a translated message.
+
+    // Display the response
+    aiResponseArea.innerHTML = ''; // Clear previous content, including the placeholder
+    const responseParagraph = document.createElement('p');
+    // The dummy response already includes "This is a dummy AI..." or similar from its own localization.
+    responseParagraph.textContent = getAIDummyResponse(question, memos); // memos is the global array
+    aiResponseArea.appendChild(responseParagraph);
+
+    // Optional: Clear the question input
+    // aiQuestionInput.value = '';
+}
+
 // --- Application Initialization ---
 document.addEventListener('DOMContentLoaded', async () => { // MODIFIED to be async
     // Assign HTML elements
@@ -282,7 +361,16 @@ document.addEventListener('DOMContentLoaded', async () => { // MODIFIED to be as
     deleteBtn = document.getElementById('delete-btn');
     memosListDiv = document.getElementById('memos-list');
 
-    if (!memoTitleInput || !memoContentTextarea || !createBtn || !saveBtn || !deleteBtn || !memosListDiv || !appTitleH1) {
+    // Assign AI Chat Elements
+    aiChatTitleH2 = document.getElementById('ai-chat-title');
+    aiQuestionInput = document.getElementById('ai-question-input');
+    aiAskBtn = document.getElementById('ai-ask-btn');
+    aiResponseArea = document.getElementById('ai-response-area');
+    aiResponsePlaceholderP = document.getElementById('ai-response-placeholder');
+
+
+    if (!memoTitleInput || !memoContentTextarea || !createBtn || !saveBtn || !deleteBtn || !memosListDiv || !appTitleH1 ||
+        !aiChatTitleH2 || !aiQuestionInput || !aiAskBtn || !aiResponseArea || !aiResponsePlaceholderP) { // Added AI elements to check
         console.error("One or more HTML elements not found. Check IDs/selectors.");
         document.body.innerHTML = "Error: Could not initialize application. Critical HTML elements missing.";
         return;
@@ -292,6 +380,7 @@ document.addEventListener('DOMContentLoaded', async () => { // MODIFIED to be as
     createBtn.addEventListener('click', handleCreateMemo);
     saveBtn.addEventListener('click', handleSaveMemo);
     deleteBtn.addEventListener('click', handleDeleteMemo);
+    aiAskBtn.addEventListener('click', handleAskAI); // Attach AI Ask button listener
 
     // Initial language load
     const initialLang = determineInitialLanguage();

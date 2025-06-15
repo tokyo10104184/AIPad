@@ -21,7 +21,21 @@
         <div id="memos-list">
             <!-- Memos will be displayed here -->
         </div>
-    </div>
+
+        <hr> <!-- Optional: a separator -->
+
+        <div id="ai-chat-area">
+            <h2 id="ai-chat-title">AI Assistant</h2> <!-- Title for the AI section -->
+            <div id="ai-question-area">
+                <input type="text" id="ai-question-input" placeholder="Ask the AI about your memos...">
+                <button id="ai-ask-btn">Ask AI</button>
+            </div>
+            <div id="ai-response-area">
+                <p id="ai-response-placeholder">AI response will appear here.</p>
+                <!-- AI's actual response will be injected here by JS -->
+            </div>
+        </div>
+    </div> <!-- Closing app-container -->
     <script src="src/app.js"></script>
 </body>
 </html>
