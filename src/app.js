@@ -141,7 +141,7 @@ async function getAIResponse(question, currentMemos) {
     }
 
     try {
-        const response = await fetch('/api/ask-openai', {
+        const response = await fetch('/api/ask-ai', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -174,7 +174,7 @@ async function getAIResponse(question, currentMemos) {
 
     } catch (error) {
         // Catch-all for network errors or other issues with the fetch call itself
-        console.error('Network or other error calling /api/ask-openai:', error);
+        console.error('Network or other error calling /api/ask-ai:', error);
         const networkErrorMsg = getLocalizedString('aiNetworkError', 'There was a network problem trying to reach the AI service.');
         return `${intro} ${networkErrorMsg}`;
     }

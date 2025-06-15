@@ -15,7 +15,7 @@ module.exports = async (req, res) => {
     const apiKey = process.env.CHUTES_API_KEY;
 
     if (!apiKey) {
-        console.error('OpenAI API key (CHUTES_API_KEY) is not set in environment variables.');
+        console.error('AI API key (CHUTES_API_KEY) is not set in environment variables.');
         return res.status(500).json({ error: 'AI service is not configured by the administrator (API key missing).' });
     }
 
@@ -42,38 +42,44 @@ module.exports = async (req, res) => {
     ];
 
     try {
-        const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+        // MODIFIED URL and variable name
+        const apiResponse = await fetch('https://llm.chutes.ai/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'gpt-3.5-turbo', // Or a newer/preferred model
+                model: 'deepseek-ai/DeepSeek-V3-0324', // Model name remains as per previous step
                 messages: messages,
-                max_tokens: 200, // Adjust as needed
-                temperature: 0.7, // Adjust as needed
+                max_tokens: 200,
+                temperature: 0.7,
             })
         });
 
-        if (!openaiResponse.ok) {
-            const errorData = await openaiResponse.json().catch(() => ({})); // Try to parse error, default to empty obj
-            console.error('OpenAI API Error:', openaiResponse.status, errorData);
+        // MODIFIED variable name for clarity
+        if (!apiResponse.ok) {
+            const errorData = await apiResponse.json().catch(() => ({}));
+            // Log message can be generic now
+            console.error('AI API Error (llm.chutes.ai):', apiResponse.status, errorData);
             const errorMessage = errorData.error && errorData.error.message ? errorData.error.message : 'Failed to get a response from AI service.';
-            return res.status(openaiResponse.status).json({ error: `AI service error: ${errorMessage}` });
+            return res.status(apiResponse.status).json({ error: `AI service error: ${errorMessage}` });
         }
 
-        const data = await openaiResponse.json();
+        // MODIFIED variable name
+        const data = await apiResponse.json();
 
         if (data.choices && data.choices.length > 0 && data.choices[0].message) {
             res.status(200).json({ answer: data.choices[0].message.content.trim() });
         } else {
-            console.error('OpenAI API response did not contain expected data structure:', data);
+            // Log message can be generic
+            console.error('AI API response (llm.chutes.ai) did not contain expected data structure:', data);
             res.status(500).json({ error: 'AI service returned an unexpected response.' });
         }
 
     } catch (error) {
-        console.error('Error calling OpenAI service:', error);
+        // Log message can be generic
+        console.error('Error calling AI service (llm.chutes.ai):', error);
         res.status(500).json({ error: 'An unexpected error occurred while contacting the AI service.' });
     }
 };
