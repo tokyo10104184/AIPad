@@ -27,14 +27,15 @@ let deleteBtn;
 let memosListDiv;
 let appTitleH1; // For app title translation
 
-// AI Chat Elements
-let aiChatTitleH2;
+// AI Chat Elements (Sticky bar - only input and button are actively used)
 let aiQuestionInput;
 let aiAskBtn;
-let aiResponseArea;
-let aiResponsePlaceholderP; // Reference to the placeholder <p>
+// let aiChatTitleH2; // Associated element is hidden and not dynamically updated
+// let aiResponseArea; // Removed from sticky bar
+// let aiResponsePlaceholderP; // Removed from sticky bar
 
 // Fullscreen Chat Elements
+let fullscreenChatViewTitleEl; // NEW
 let fullscreenChatView;
 let closeChatBtn;
 let chatMessagesContainer;
@@ -114,18 +115,14 @@ function applyTranslationsToStaticElements() {
     if (saveBtn) saveBtn.textContent = getLocalizedString('saveMemoButton');
     if (deleteBtn) deleteBtn.textContent = getLocalizedString('deleteMemoButton');
 
-    // Add translations for AI section
-    if (aiChatTitleH2) aiChatTitleH2.textContent = getLocalizedString('aiChatTitle');
+    // Add translations for AI section (sticky bar part)
     if (aiQuestionInput) aiQuestionInput.placeholder = getLocalizedString('aiQuestionPlaceholder');
     if (aiAskBtn) aiAskBtn.textContent = getLocalizedString('aiAskButton');
+    // aiChatTitleH2 (for sticky bar) is hidden, so no need to translate it here.
+    // aiResponsePlaceholderP was for the response area in sticky bar, which is removed.
 
-    // Only set the placeholder text if no actual AI response has been rendered yet.
-    // We can check if aiResponseArea only contains the placeholder paragraph.
-    if (aiResponsePlaceholderP && aiResponseArea.contains(aiResponsePlaceholderP) && aiResponseArea.children.length === 1) {
-         aiResponsePlaceholderP.textContent = getLocalizedString('aiResponsePlaceholder');
-    }
-
-    // Add translation for fullscreen chat input placeholder
+    // Add translation for fullscreen chat title and input placeholder
+    if (fullscreenChatViewTitleEl) fullscreenChatViewTitleEl.textContent = getLocalizedString('aiChatTitle'); // Using existing 'aiChatTitle'
     if (fullscreenChatInput) fullscreenChatInput.placeholder = getLocalizedString('fullscreenChatInputPlaceholder');
 }
 
@@ -431,12 +428,12 @@ document.addEventListener('DOMContentLoaded', async () => { // MODIFIED to be as
     memosListDiv = document.getElementById('memos-list');
 
     // Assign AI Chat Elements (Sticky Bar)
-    aiChatTitleH2 = document.getElementById('ai-chat-title'); // This is hidden by CSS but ID exists
+    // aiChatTitleH2 = document.getElementById('ai-chat-title'); // Hidden, not actively used for translation updates
     aiQuestionInput = document.getElementById('ai-question-input');
     aiAskBtn = document.getElementById('ai-ask-btn');
-    // aiResponseArea & aiResponsePlaceholderP are no longer part of the sticky bar.
 
     // Assign Fullscreen Chat Elements
+    fullscreenChatViewTitleEl = document.getElementById('fullscreen-chat-title'); // NEW
     fullscreenChatView = document.getElementById('fullscreen-chat-view');
     closeChatBtn = document.getElementById('close-chat-btn');
     chatMessagesContainer = document.getElementById('chat-messages-container');
@@ -444,8 +441,8 @@ document.addEventListener('DOMContentLoaded', async () => { // MODIFIED to be as
     fullscreenSendBtn = document.getElementById('fullscreen-send-btn');
 
     if (!memoTitleInput || !memoContentTextarea || !createBtn || !saveBtn || !deleteBtn || !memosListDiv || !appTitleH1 ||
-        !aiQuestionInput || !aiAskBtn || /* Removed aiChatTitleH2, aiResponseArea, aiResponsePlaceholderP from critical check as they are optional or managed differently */
-        !fullscreenChatView || !closeChatBtn || !chatMessagesContainer || !fullscreenChatInput || !fullscreenSendBtn ) {
+        !aiQuestionInput || !aiAskBtn || // aiChatTitleH2, aiResponseArea, aiResponsePlaceholderP removed from check
+        !fullscreenChatViewTitleEl || !fullscreenChatView || !closeChatBtn || !chatMessagesContainer || !fullscreenChatInput || !fullscreenSendBtn ) {
         console.error("One or more critical HTML elements not found. Check IDs/selectors.");
         document.body.innerHTML = "Error: Could not initialize application. Critical HTML elements missing.";
         return;

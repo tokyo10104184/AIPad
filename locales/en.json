@@ -14,7 +14,7 @@
   "alertMemoDeleted": "Memo deleted successfully.",
   "alertErrorDeleting": "Error deleting memo.",
   "untitledMemoFallback": "Untitled",
-  "aiChatTitle": "AI Assistant",
+  "aiChatTitle": "Chat",
   "aiQuestionPlaceholder": "Ask the AI about your memos...",
   "aiAskButton": "Ask AI",
   "aiResponsePlaceholder": "AI response will appear here.",
