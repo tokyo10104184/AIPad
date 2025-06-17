@@ -26,17 +26,28 @@
     </div> <!-- End of main-content-container -->
 
     <div id="sticky-ai-chat-container"> <!-- New dedicated container for AI chat -->
-        <h2 id="ai-chat-title">AI Assistant</h2> <!-- Title for the AI section -->
+        <!-- <h2 id="ai-chat-title">AI Assistant</h2> --> <!-- Commented out or removed -->
         <div id="ai-question-area">
             <input type="text" id="ai-question-input" placeholder="Ask the AI about your memos...">
-            <button id="ai-ask-btn">Ask AI</button>
-        </div>
-        <div id="ai-response-area">
-            <p id="ai-response-placeholder">AI response will appear here.</p>
-            <!-- AI's actual response will be injected here by JS -->
+            <button id="ai-ask-btn">↑</button> <!-- Changed text to arrow -->
         </div>
     </div>
 
     <script src="src/app.js"></script>
+
+    <!-- Full-Screen Chat View (Initially Hidden) -->
+    <div id="fullscreen-chat-view" style="display: none;">
+        <div id="fullscreen-chat-header">
+            <h2 id="fullscreen-chat-title">AI Conversation</h2> <!-- Title for the modal -->
+            <button id="close-chat-btn">&times;</button> <!-- Close button (X icon) -->
+        </div>
+        <div id="chat-messages-container">
+            <!-- Messages will be appended here by JavaScript -->
+        </div>
+        <div id="fullscreen-chat-input-area">
+            <input type="text" id="fullscreen-chat-input">
+            <button id="fullscreen-send-btn">↑</button> <!-- Send button (Arrow icon) -->
+        </div>
+    </div>
 </body>
 </html>

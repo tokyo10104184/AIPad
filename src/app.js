@@ -34,6 +34,15 @@ let aiAskBtn;
 let aiResponseArea;
 let aiResponsePlaceholderP; // Reference to the placeholder <p>
 
+// Fullscreen Chat Elements
+let fullscreenChatView;
+let closeChatBtn;
+let chatMessagesContainer;
+let fullscreenChatInput;
+let fullscreenSendBtn;
+
+let conversationHistory = []; // To store { role: 'user'/'assistant', content: 'message' }
+
 const LOCAL_STORAGE_KEY = 'js-memo-app-memos';
 const LANG_STORAGE_KEY = 'js-memo-app-lang';
 
@@ -115,6 +124,9 @@ function applyTranslationsToStaticElements() {
     if (aiResponsePlaceholderP && aiResponseArea.contains(aiResponsePlaceholderP) && aiResponseArea.children.length === 1) {
          aiResponsePlaceholderP.textContent = getLocalizedString('aiResponsePlaceholder');
     }
+
+    // Add translation for fullscreen chat input placeholder
+    if (fullscreenChatInput) fullscreenChatInput.placeholder = getLocalizedString('fullscreenChatInputPlaceholder');
 }
 
 function determineInitialLanguage() {
@@ -131,54 +143,50 @@ function determineInitialLanguage() {
     return 'ja'; // Default
 }
 
-// --- AI Service Call ---
-async function getAIResponse(question, currentMemos) {
-    const intro = getLocalizedString('aiRealIntro', "AI Response:"); // Keep this for prefixing the final display
+function addMessageToChatView(text, type, isThinking = false) {
+    if (!chatMessagesContainer) return;
 
-    if (!question.trim()) {
-        // Handle empty question on the client-side before calling the API (optional, but good practice)
-        return `${intro} ${getLocalizedString('aiDummyEmptyQuestion', "You didn't ask anything!")}`;
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add('chat-message', type === 'user' ? 'user-message' : 'ai-message');
+    if (isThinking) {
+        messageDiv.classList.add('thinking');
     }
+    messageDiv.textContent = text;
+    chatMessagesContainer.appendChild(messageDiv);
+    chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight; // Auto-scroll
+}
 
+// --- AI Service Call ---
+// Updated getAIResponse to send history and handle raw responses
+async function getAIResponse(currentQuestion, history, memosPayload) {
+    // Assumes currentQuestion is not empty, validated by caller.
     try {
         const response = await fetch('/api/ask-ai', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json', },
             body: JSON.stringify({
-                question: question,
-                memos: currentMemos // Send all current memos
+                currentQuestion: currentQuestion,
+                conversationHistory: history,
+                memos: memosPayload
             }),
         });
-
         const data = await response.json();
-
         if (!response.ok) {
-            // Error came from our serverless function (or network issue)
             console.error('Error from AI service/serverless function:', data.error || response.statusText);
-            const serverErrorMsg = getLocalizedString('aiServiceError', 'Sorry, there was an error contacting the AI service.');
-            // Use error from serverless function if available, otherwise generic
-            return `${intro} ${data.error ? data.error : serverErrorMsg}`;
+            return data.error ? data.error : getLocalizedString('aiServiceError', 'Sorry, there was an error contacting the AI service.');
         }
-
-        // Assuming successful response from serverless function has { answer: "..." }
         if (data.answer) {
-            return `${intro} ${data.answer}`;
+            return data.answer;
         } else {
-            // Unexpected response structure from our serverless function
             console.error('Unexpected response structure from serverless function:', data);
-            const unexpectedRespMsg = getLocalizedString('aiUnexpectedResponse', 'The AI service returned an unexpected response.');
-            return `${intro} ${unexpectedRespMsg}`;
+            return getLocalizedString('aiUnexpectedResponse', 'The AI service returned an unexpected response.');
         }
-
     } catch (error) {
-        // Catch-all for network errors or other issues with the fetch call itself
         console.error('Network or other error calling /api/ask-ai:', error);
-        const networkErrorMsg = getLocalizedString('aiNetworkError', 'There was a network problem trying to reach the AI service.');
-        return `${intro} ${networkErrorMsg}`;
+        return getLocalizedString('aiNetworkError', 'There was a network problem trying to reach the AI service.');
     }
 }
+
 
 // --- Core Memo Logic ---
 
@@ -345,31 +353,71 @@ function handleDeleteMemo() {
     }
 }
 
-async function handleAskAI() { // Make it async if AI service might become async
-    if (!aiQuestionInput || !aiResponseArea) return;
-
+async function handleOpenChatFromStickyBar() {
+    if (!aiQuestionInput || !fullscreenChatView) return;
     const question = aiQuestionInput.value.trim();
+    if (!question) {
+        // Display message in chat view or alert - let's use chat view
+        // This requires fullscreenChatView to be visible first to add message.
+        // For now, let's just alert or do nothing if it's the first message.
+        // Or, open the chat view and then show the message.
+        fullscreenChatView.style.display = 'flex'; // Open chat view
+        addMessageToChatView(getLocalizedString('aiMustEnterQuestion', "Please type a message to send."), 'ai');
+        return;
+    }
 
-    // Clear previous response and show loading message
-    const thinkingMessage = getLocalizedString('aiThinking', "AI is thinking..."); // New localization key
-    aiResponseArea.innerHTML = ''; // Clear previous content
-    const thinkingParagraph = document.createElement('p');
-    thinkingParagraph.style.fontStyle = 'italic'; // Optional: style the thinking message
-    thinkingParagraph.textContent = thinkingMessage;
-    aiResponseArea.appendChild(thinkingParagraph);
+    fullscreenChatView.style.display = 'flex';
+    conversationHistory = []; // Clear/start new history
 
-    // Get the AI response (already updated to await)
-    const aiResponseText = await getAIResponse(question, memos); // memos is the global array
+    addMessageToChatView(question, 'user');
+    conversationHistory.push({ role: 'user', content: question });
 
-    // Display the actual response
-    aiResponseArea.innerHTML = ''; // Clear "thinking..." message
-    const responseParagraph = document.createElement('p');
-    responseParagraph.textContent = aiResponseText;
-    aiResponseArea.appendChild(responseParagraph);
+    aiQuestionInput.value = ''; // Clear sticky bar input
 
-    // Optional: Clear the question input
-    // aiQuestionInput.value = '';
+    // Call a new function to handle getting and displaying AI response
+    await fetchAndDisplayAIResponse(question, conversationHistory);
 }
+
+async function fetchAndDisplayAIResponse(questionForAI, historyForAPI) {
+    addMessageToChatView(getLocalizedString('aiThinking', "AI is thinking..."), 'ai', true);
+
+    const aiResponseText = await getAIResponse(questionForAI, historyForAPI, memos); // Pass current memos global
+
+    // Remove "thinking..." message. Find and remove the specific thinking message.
+    const thinkingMsgElement = chatMessagesContainer.querySelector('.thinking');
+    if (thinkingMsgElement) {
+        chatMessagesContainer.removeChild(thinkingMsgElement);
+    }
+
+    addMessageToChatView(aiResponseText, 'ai');
+    conversationHistory.push({ role: 'assistant', content: aiResponseText });
+}
+
+async function handleSendChatMessageInFullscreen() {
+    if (!fullscreenChatInput) return;
+    const question = fullscreenChatInput.value.trim();
+    if (!question) {
+        addMessageToChatView(getLocalizedString('aiMustEnterQuestion', "Please type a message to send."), 'ai');
+        return;
+    }
+
+    addMessageToChatView(question, 'user');
+    conversationHistory.push({ role: 'user', content: question });
+
+    fullscreenChatInput.value = '';
+
+    await fetchAndDisplayAIResponse(question, conversationHistory);
+}
+
+function handleCloseChat() {
+    if (!fullscreenChatView) return;
+    fullscreenChatView.style.display = 'none';
+    // Optional: Clear conversationHistory if you want each session to be fresh
+    // conversationHistory = [];
+    // Optional: Clear chatMessagesContainer
+    // if(chatMessagesContainer) chatMessagesContainer.innerHTML = '';
+}
+
 
 // --- Application Initialization ---
 document.addEventListener('DOMContentLoaded', async () => { // MODIFIED to be async
@@ -382,17 +430,23 @@ document.addEventListener('DOMContentLoaded', async () => { // MODIFIED to be as
     deleteBtn = document.getElementById('delete-btn');
     memosListDiv = document.getElementById('memos-list');
 
-    // Assign AI Chat Elements
-    aiChatTitleH2 = document.getElementById('ai-chat-title');
+    // Assign AI Chat Elements (Sticky Bar)
+    aiChatTitleH2 = document.getElementById('ai-chat-title'); // This is hidden by CSS but ID exists
     aiQuestionInput = document.getElementById('ai-question-input');
     aiAskBtn = document.getElementById('ai-ask-btn');
-    aiResponseArea = document.getElementById('ai-response-area');
-    aiResponsePlaceholderP = document.getElementById('ai-response-placeholder');
+    // aiResponseArea & aiResponsePlaceholderP are no longer part of the sticky bar.
 
+    // Assign Fullscreen Chat Elements
+    fullscreenChatView = document.getElementById('fullscreen-chat-view');
+    closeChatBtn = document.getElementById('close-chat-btn');
+    chatMessagesContainer = document.getElementById('chat-messages-container');
+    fullscreenChatInput = document.getElementById('fullscreen-chat-input');
+    fullscreenSendBtn = document.getElementById('fullscreen-send-btn');
 
     if (!memoTitleInput || !memoContentTextarea || !createBtn || !saveBtn || !deleteBtn || !memosListDiv || !appTitleH1 ||
-        !aiChatTitleH2 || !aiQuestionInput || !aiAskBtn || !aiResponseArea || !aiResponsePlaceholderP) { // Added AI elements to check
-        console.error("One or more HTML elements not found. Check IDs/selectors.");
+        !aiQuestionInput || !aiAskBtn || /* Removed aiChatTitleH2, aiResponseArea, aiResponsePlaceholderP from critical check as they are optional or managed differently */
+        !fullscreenChatView || !closeChatBtn || !chatMessagesContainer || !fullscreenChatInput || !fullscreenSendBtn ) {
+        console.error("One or more critical HTML elements not found. Check IDs/selectors.");
         document.body.innerHTML = "Error: Could not initialize application. Critical HTML elements missing.";
         return;
     }
@@ -401,7 +455,11 @@ document.addEventListener('DOMContentLoaded', async () => { // MODIFIED to be as
     createBtn.addEventListener('click', handleCreateMemo);
     saveBtn.addEventListener('click', handleSaveMemo);
     deleteBtn.addEventListener('click', handleDeleteMemo);
-    aiAskBtn.addEventListener('click', handleAskAI); // Attach AI Ask button listener
+    aiAskBtn.addEventListener('click', handleOpenChatFromStickyBar); // Updated listener
+
+    // Add new listeners for fullscreen chat
+    if (fullscreenSendBtn) fullscreenSendBtn.addEventListener('click', handleSendChatMessageInFullscreen);
+    if (closeChatBtn) closeChatBtn.addEventListener('click', handleCloseChat);
 
     // Initial language load
     const initialLang = determineInitialLanguage();

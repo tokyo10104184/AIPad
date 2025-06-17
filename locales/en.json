@@ -27,5 +27,7 @@
   "aiThinking": "AI is thinking...",
   "aiServiceError": "Sorry, there was an error contacting the AI service.",
   "aiUnexpectedResponse": "The AI service returned an unexpected response.",
-  "aiNetworkError": "There was a network problem trying to reach the AI service."
+  "aiNetworkError": "There was a network problem trying to reach the AI service.",
+  "aiMustEnterQuestion": "Please type a message to send.",
+  "fullscreenChatInputPlaceholder": "Type your message..."
 }

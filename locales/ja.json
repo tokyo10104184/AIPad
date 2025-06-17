@@ -27,5 +27,7 @@
   "aiThinking": "AIが思考中です...",
   "aiServiceError": "申し訳ありませんが、AIサービスへの接続中にエラーが発生しました。",
   "aiUnexpectedResponse": "AIサービスから予期しない応答がありました。",
-  "aiNetworkError": "AIサービスへの接続中にネットワークの問題が発生しました。"
+  "aiNetworkError": "AIサービスへの接続中にネットワークの問題が発生しました。",
+  "aiMustEnterQuestion": "送信するメッセージを入力してください。",
+  "fullscreenChatInputPlaceholder": "メッセージを入力..."
 }
