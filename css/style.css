@@ -4,12 +4,18 @@
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     margin: 0;
-    padding: 20px;
+    /* padding: 20px; Body padding removed to allow sticky footer to span full width if needed, main content will handle its own padding */
     background-color: #f7f9fc; /* Light grayish blue background */
     color: #2c3e50; /* Dark desaturated blue for text */
     line-height: 1.6;
     font-size: 16px;
 }
+
+#main-content-container {
+    padding: 20px; /* Add padding here now that body doesn't have it */
+    padding-bottom: 200px; /* Adjust this value based on AI bar's actual height */
+}
+
 
 #app-container {
     max-width: 750px; /* Slightly wider for better spacing */
@@ -113,7 +119,7 @@ hr {
 }
 
 /* AI Ask Button - already partially covered by shared style */
-#ai-ask-btn {
+#ai-ask-btn { /* This ID is within #sticky-ai-chat-container now */
     background-color: #2ecc71; /* Green for AI */
     color: white;
 }
@@ -133,8 +139,6 @@ hr {
     list-style-type: none;
     padding: 0;
     margin: 0; /* Remove default ul margins if any */
-    /* If #memos-list is the grid container, the ul might not be needed,
-       and li elements could be direct children. For now, assume ul remains. */
 }
 
 #memos-list li {
@@ -202,7 +206,8 @@ hr {
     font-size: 1em;
 }
 
-/* AI Chat Area Styles - Base Refinement */
+/* Old AI Chat Area Styles - Commented out as they are superseded by #sticky-ai-chat-container */
+/*
 #ai-chat-area {
     margin-top: 30px;
     padding-top: 25px;
@@ -210,26 +215,26 @@ hr {
 }
 
 #ai-chat-area h2 {
-    font-size: 1.3em; /* Adjusted size */
+    font-size: 1.3em;
     color: #2c3e50;
     margin-bottom: 20px;
     text-align: left;
     font-weight: 600;
 }
 
-#ai-question-area {
+#ai-question-area { // This ID is now inside #sticky-ai-chat-container
     display: flex;
-    gap: 12px; /* Adjusted gap */
+    gap: 12px;
     margin-bottom: 20px;
 }
 
-#ai-question-input { /* Uses shared input styling from above */
+#ai-question-input { // This ID is now inside #sticky-ai-chat-container
     flex-grow: 1;
 }
 
-#ai-response-area {
-    padding: 15px 20px; /* Adjusted padding */
-    background-color: #f8f9fa; /* Slightly different background for AI response */
+#ai-response-area { // This ID is now inside #sticky-ai-chat-container
+    padding: 15px 20px;
+    background-color: #f8f9fa;
     border: 1px solid #e0e6ed;
     border-radius: 8px;
     min-height: 60px;
@@ -239,7 +244,85 @@ hr {
     line-height: 1.5;
 }
 
-#ai-response-placeholder {
+#ai-response-placeholder { // This ID is now inside #sticky-ai-chat-container
     color: #7f8c8d;
     font-style: italic;
+}
+*/
+
+/* Sticky AI Chat Container */
+#sticky-ai-chat-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #ffffff; /* White background, or a very light grey */
+    padding: 15px 25px 20px 25px; /* Top, LR, Bottom padding */
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08); /* Shadow on the top */
+    z-index: 1000;
+    border-top: 1px solid #e0e6ed;
+    display: flex; /* Use flex to manage inner content better */
+    flex-direction: column; /* Stack title, input, response */
+    max-height: 40vh; /* Max height to prevent it from taking too much screen */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+/* Styling for elements within the sticky AI chat container */
+#sticky-ai-chat-container #ai-chat-title { /* ID of h2 */
+    font-size: 1.1em; /* Slightly smaller title for the bar */
+    color: #2c3e50;
+    margin-top: 0; /* Remove top margin if any */
+    margin-bottom: 12px;
+    text-align: left;
+    font-weight: 600;
+}
+
+#sticky-ai-chat-container #ai-question-area { /* ID of div */
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    width: 100%; /* Ensure it takes full width */
+}
+
+#sticky-ai-chat-container #ai-question-input { /* ID of input */
+    flex-grow: 1;
+    padding: 10px 12px; /* Slightly less padding than main inputs */
+    font-size: 0.95em;
+    /* Other input styles like border, radius are inherited or can be set here from general input styles */
+    /* General input styles are already defined and should apply. If not, copy them here. */
+    border: 1px solid #dce1e6;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    color: #2c3e50;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+#sticky-ai-chat-container #ai-question-input:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+
+#sticky-ai-chat-container #ai-ask-btn { /* ID of button, already has base styles */
+    padding: 10px 15px; /* Adjust if needed */
+    flex-shrink: 0; /* Prevent button from shrinking */
+}
+
+#sticky-ai-chat-container #ai-response-area { /* ID of div */
+    background-color: #f0f3f5; /* Slightly different background */
+    border: 1px solid #dce1e6;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 0.9em;
+    min-height: 40px; /* Smaller min-height */
+    max-height: 15vh; /* Max height for response area to allow scrolling within it */
+    overflow-y: auto; /* Allow scrolling for longer responses */
+    color: #2c3e50;
+    white-space: pre-wrap;
+}
+
+#sticky-ai-chat-container #ai-response-placeholder { /* ID of p */
+    color: #7f8c8d;
+    font-style: italic;
+    font-size: 0.9em;
 }
