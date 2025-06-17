@@ -1,175 +1,245 @@
+/* Import Google Font - Inter */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     margin: 0;
     padding: 20px;
-    background-color: #f4f4f4;
-    color: #333;
+    background-color: #f7f9fc; /* Light grayish blue background */
+    color: #2c3e50; /* Dark desaturated blue for text */
     line-height: 1.6;
+    font-size: 16px;
 }
 
 #app-container {
-    max-width: 700px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 750px; /* Slightly wider for better spacing */
+    margin: 30px auto;
+    padding: 30px;   /* Increased padding */
+    background-color: #ffffff; /* White container background */
+    border-radius: 12px; /* More pronounced border radius */
+    box-shadow: 0 8px 24px rgba(149, 157, 165, 0.2); /* Softer, more modern shadow */
 }
 
 h1 {
     text-align: center;
-    color: #333;
-    margin-bottom: 20px;
+    color: #2c3e50;
+    margin-bottom: 30px; /* Increased margin */
+    font-weight: 600;
 }
 
+hr {
+    border: none;
+    border-top: 1px solid #e0e6ed; /* Lighter separator */
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+/* Input fields and Textarea */
 #input-area {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 15px; /* Increased gap */
 }
 
 #input-area input[type="text"],
 #input-area textarea {
-    width: 100%; /* Full width within the flex container */
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    width: 100%;
+    padding: 12px 15px; /* Increased padding */
+    border: 1px solid #dce1e6; /* Softer border color */
+    border-radius: 8px; /* Softer radius */
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+    font-size: 1em;
+    color: #2c3e50;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#input-area input[type="text"]:focus,
+#input-area textarea:focus {
+    outline: none;
+    border-color: #3498db; /* Primary color focus */
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1); /* Focus ring */
 }
 
 #input-area textarea {
-    min-height: 100px;
+    min-height: 120px;
     resize: vertical;
 }
 
+/* Button Area & General Button Styling */
 #button-area {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     text-align: left;
 }
 
-#button-area button {
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: white;
+#button-area button,
+#ai-ask-btn { /* Apply base style to AI ask button too */
+    padding: 10px 18px; /* Adjusted padding */
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
-    margin-right: 10px;
-    font-size: 1em;
+    font-size: 0.95em; /* Slightly smaller font for buttons */
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    margin-right: 12px; /* Consistent margin */
 }
 
-#button-area button:hover {
-    background-color: #0056b3;
+#button-area button:active,
+#ai-ask-btn:active {
+    transform: translateY(1px); /* Click effect */
 }
 
+/* Primary Button (Create, Save) */
+#button-area #create-btn,
+#button-area #save-btn {
+    background-color: #3498db; /* Primary blue */
+    color: white;
+}
+
+#button-area #create-btn:hover,
+#button-area #save-btn:hover {
+    background-color: #2980b9; /* Darker blue on hover */
+}
+
+/* Delete Button */
 #button-area #delete-btn {
-    background-color: #dc3545;
+    background-color: #e74c3c; /* Red for delete */
+    color: white;
 }
 #button-area #delete-btn:hover {
-    background-color: #c82333;
+    background-color: #c0392b; /* Darker red on hover */
 }
 
+/* AI Ask Button - already partially covered by shared style */
+#ai-ask-btn {
+    background-color: #2ecc71; /* Green for AI */
+    color: white;
+}
+#ai-ask-btn:hover {
+    background-color: #27ae60; /* Darker green */
+}
+
+
+/* Memo List - Card-based Design */
 #memos-list {
-    margin-top: 20px;
+    margin-top: 30px; /* Increased top margin for better separation */
+    display: grid; /* Using grid for potentially multi-column layout in future, or just for gap control */
+    gap: 18px; /* Gap between memo cards */
 }
 
-#memos-list ul {
+#memos-list ul { /* This ul might become redundant if grid is directly on #memos-list, but keep for now */
     list-style-type: none;
     padding: 0;
+    margin: 0; /* Remove default ul margins if any */
+    /* If #memos-list is the grid container, the ul might not be needed,
+       and li elements could be direct children. For now, assume ul remains. */
 }
 
 #memos-list li {
-    padding: 15px;
-    border: 1px solid #eee;
-    background-color: #f9f9f9;
-    margin-bottom: 10px;
-    border-radius: 4px;
+    background-color: #ffffff; /* White background for cards */
+    border: 1px solid #e9ecef; /* Slightly lighter border for cards */
+    border-radius: 10px;       /* Consistent with other new border-radius values */
+    padding: 18px 20px;      /* Adjusted padding for card content */
+    margin-bottom: 0;        /* Remove bottom margin as grid gap handles spacing */
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.25s ease-in-out; /* Smooth transition for hover and selection */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04); /* Subtle shadow for cards */
+    display: flex;           /* Use flexbox for internal layout of card content */
+    flex-direction: column;  /* Stack content vertically */
 }
 
 #memos-list li:hover {
-    background-color: #efefef;
+    transform: translateY(-3px); /* Slightly more lift on hover */
+    box-shadow: 0 7px 14px rgba(0, 0, 0, 0.07), 0 3px 6px rgba(0, 0, 0, 0.05); /* Enhanced shadow on hover */
+    border-color: #dee6ed;
 }
 
 #memos-list li.selected {
-    background-color: #e0e0e0;
-    border-left: 5px solid #007bff;
+    background-color: #eef7ff; /* Lighter, more subtle blue for selected card */
+    border-left: 4px solid #3498db; /* Keep prominent left border for selection */
+    box-shadow: 0 6px 12px rgba(52, 152, 219, 0.1), 0 3px 6px rgba(0,0,0,0.06); /* Shadow indicating selection */
+    padding-left: 16px; /* Adjust padding to account for the border */
+    transform: translateY(0); /* No lift when selected, to differentiate from hover */
 }
 
-#memos-list p { /* For "No memos yet" message */
-    text-align: center;
-    color: #777;
+#memos-list li strong { /* Styling for memo title within the card */
+    font-weight: 600;
+    color: #34495e; /* Title color */
+    font-size: 1.05em;
+    margin-bottom: 6px; /* Space below title */
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Limit title to 2 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.memo-date {
-    font-size: 0.8em;
-    color: #666;
-    display: block; /* Make it appear on its own line or control spacing */
-    margin-top: 4px;
-}
-
-.memo-snippet {
+#memos-list li .memo-snippet { /* Snippet styling within the card */
     font-size: 0.9em;
-    color: #444;
-    display: block; /* Make it appear on its own line */
-    margin-top: 4px;
+    color: #566573;
+    line-height: 1.5;
+    margin-bottom: 10px; /* Space below snippet, before date */
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Limit snippet to 3 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-/* AI Chat Area Styles */
+#memos-list li .memo-date { /* Date styling within the card */
+    font-size: 0.75em; /* Smaller date text */
+    color: #7f8c8d;
+    margin-top: auto; /* Push date to the bottom of the card if using flex */
+    text-align: right; /* Align date to the right */
+}
+
+#memos-list p { /* "No memos yet" message styling */
+    text-align: center;
+    color: #7f8c8d;
+    padding: 30px 0; /* Increased padding */
+    font-size: 1em;
+}
+
+/* AI Chat Area Styles - Base Refinement */
 #ai-chat-area {
     margin-top: 30px;
-    padding-top: 20px;
-    border-top: 1px solid #eee; /* Optional separator */
+    padding-top: 25px;
+    border-top: 1px solid #e0e6ed;
 }
 
 #ai-chat-area h2 {
-    font-size: 1.4em;
-    color: #333;
-    margin-bottom: 15px;
-    text-align: left; /* Align with other content if needed, or center */
+    font-size: 1.3em; /* Adjusted size */
+    color: #2c3e50;
+    margin-bottom: 20px;
+    text-align: left;
+    font-weight: 600;
 }
 
 #ai-question-area {
     display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
+    gap: 12px; /* Adjusted gap */
+    margin-bottom: 20px;
 }
 
-#ai-question-input {
-    flex-grow: 1; /* Input field takes available space */
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1em;
-}
-
-#ai-ask-btn {
-    padding: 10px 15px;
-    background-color: #28a745; /* Green color for AI button */
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1em;
-}
-
-#ai-ask-btn:hover {
-    background-color: #218838;
+#ai-question-input { /* Uses shared input styling from above */
+    flex-grow: 1;
 }
 
 #ai-response-area {
-    padding: 15px;
-    background-color: #f9f9f9;
-    border: 1px solid #eee;
-    border-radius: 4px;
-    min-height: 50px;
-    color: #333;
-    white-space: pre-wrap; /* Preserve whitespace and newlines in AI response */
+    padding: 15px 20px; /* Adjusted padding */
+    background-color: #f8f9fa; /* Slightly different background for AI response */
+    border: 1px solid #e0e6ed;
+    border-radius: 8px;
+    min-height: 60px;
+    color: #2c3e50;
+    white-space: pre-wrap;
+    font-size: 0.95em;
+    line-height: 1.5;
 }
 
 #ai-response-placeholder {
-    color: #777;
+    color: #7f8c8d;
     font-style: italic;
 }

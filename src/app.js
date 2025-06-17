@@ -239,7 +239,10 @@ function displayMemos() {
         const li = document.createElement('li');
         const date = new Date(memo.createdAt);
         const contentSnippet = memo.content.substring(0, 30) + (memo.content.length > 30 ? '...' : '');
-        li.innerHTML = `<strong>${memo.title || getLocalizedString('untitledMemoFallback', 'Untitled')}</strong> - <span class="memo-date">${date.toLocaleDateString(currentLang)} ${date.toLocaleTimeString(currentLang)}</span><br><span class="memo-snippet">${contentSnippet}</span>`;
+        li.innerHTML = `
+            <strong>${memo.title || getLocalizedString('untitledMemoFallback', 'Untitled')}</strong>
+            <span class="memo-snippet">${contentSnippet}</span>
+            <span class="memo-date">${date.toLocaleDateString(currentLang)} ${date.toLocaleTimeString(currentLang)}</span>`;
         li.dataset.id = memo.id.toString();
         li.addEventListener('click', () => selectMemoForEditing(memo.id));
 
