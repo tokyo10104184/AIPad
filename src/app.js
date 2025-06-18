@@ -270,12 +270,19 @@ function populateInputFields(memo) {
 }
 
 function selectMemoForEditing(id) {
+    console.log("selectMemoForEditing called with ID:", id, "Type:", typeof id);
     const memo = findMemoById(id);
     if (memo) {
         selectedMemoId = id;
+        console.log("selectedMemoId is now:", selectedMemoId, "Type:", typeof selectedMemoId);
         populateInputFields(memo);
         if (saveBtn) saveBtn.style.display = 'inline-block';
-        if (deleteBtn) deleteBtn.style.display = 'inline-block';
+        if (deleteBtn) {
+            deleteBtn.style.display = 'inline-block';
+            console.log("Delete button display style:", deleteBtn.style.display);
+        } else {
+            console.log("Delete button display style: deleteBtn not found");
+        }
         if (createBtn) createBtn.textContent = getLocalizedString('newMemoButton'); // MODIFIED
         displayMemos();
     }
@@ -335,18 +342,28 @@ function handleSaveMemo() {
 }
 
 function handleDeleteMemo() {
+    console.log("handleDeleteMemo called. selectedMemoId:", selectedMemoId, "Type:", typeof selectedMemoId);
     if (selectedMemoId === null) return;
 
-    if (confirm(getLocalizedString('confirmDeleteMemo'))) { // MODIFIED
+    console.log("About to show confirm dialog for deleting memo ID:", selectedMemoId);
+    const confirmation = confirm(getLocalizedString('confirmDeleteMemo'));
+    console.log("Confirmation result:", confirmation);
+    if (confirmation) { // MODIFIED
+        console.log("User confirmed. Calling deleteMemoFromState with ID:", selectedMemoId);
         const deleted = deleteMemoFromState(selectedMemoId);
         if (deleted) {
             saveMemosToLocalStorage();
             deselectMemo();
             displayMemos();
             alert(getLocalizedString('alertMemoDeleted')); // MODIFIED
+            console.log("Memo deletion process successful for ID:", selectedMemoId);
         } else {
             alert(getLocalizedString('alertErrorDeleting')); // MODIFIED
+            console.log("deleteMemoFromState returned false or confirmation was false for ID:", selectedMemoId);
         }
+    } else {
+        // Added this else to log if confirmation was false, as the original "else" above is for "deleted" being false
+        console.log("User cancelled deletion for memo ID:", selectedMemoId);
     }
 }
 
@@ -452,6 +469,7 @@ document.addEventListener('DOMContentLoaded', async () => { // MODIFIED to be as
     createBtn.addEventListener('click', handleCreateMemo);
     saveBtn.addEventListener('click', handleSaveMemo);
     deleteBtn.addEventListener('click', handleDeleteMemo);
+    console.log("Delete button event listener attached:", deleteBtn);
     aiAskBtn.addEventListener('click', handleOpenChatFromStickyBar); // Updated listener
 
     // Add new listeners for fullscreen chat
@@ -496,7 +514,9 @@ function updateStateMemo(id, title, content) {
 }
 
 function deleteMemoFromState(id) {
+    console.log("deleteMemoFromState called with ID:", id, "Type:", typeof id, ". Current memos count:", memos.length);
     const initialLength = memos.length;
     memos = memos.filter(memo => memo.id !== id);
+    console.log("Memos count after filter:", memos.length);
     return memos.length < initialLength;
 }
