@@ -116,6 +116,10 @@ hr {
     margin-top: 30px;
     display: grid;
     gap: 18px;
+    max-height: 500px; /* Max height before scrolling (approx. 2-3 full items) */
+    overflow-y: auto;  /* Enable vertical scrollbar when content exceeds max-height */
+    padding-right: 5px; /* Add a little padding on the right if scrollbar appears, to prevent content touching it */
+    box-sizing: border-box; /* Ensure padding is included in height calculation if needed elsewhere */
 }
 
 #memos-list ul {
